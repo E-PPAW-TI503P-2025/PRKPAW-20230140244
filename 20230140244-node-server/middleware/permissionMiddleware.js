@@ -2,8 +2,8 @@
  	  console.log('Middleware: Menambahkan data user dummy...');
  	  req.user = {
  	    id: 123,
- 	    nama: 'User karyawan',
- 	    role: 'karyawan'
+ 	    nama: 'User admin',
+ 	    role: 'admin'
  	  };
  	  next(); 
  	};
