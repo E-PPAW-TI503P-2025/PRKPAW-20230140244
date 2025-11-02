@@ -5,25 +5,15 @@ const { Op } = require("sequelize");
 exports.getDailyReport = async (req, res) => {
   try {
     const { nama, tanggalMulai, tanggalSelesai } = req.query;
-    let options = { where: {} };
+    const options = { where: {} };
 
     if (nama) {
-      options.where.nama = {
-        [Op.like]: `%${nama}%`,
-      };
+      options.where.nama = { [Op.like]: `%${nama}%` };
     }
 
     if (tanggalMulai && tanggalSelesai) {
-      options.where.tanggal = {
+      options.where.checkIn = {
         [Op.between]: [tanggalMulai, tanggalSelesai],
-      };
-    } else if (tanggalMulai) {
-      options.where.tanggal = {
-        [Op.gte]: tanggalMulai,
-      };
-    } else if (tanggalSelesai) {
-      options.where.tanggal = {
-        [Op.lte]: tanggalSelesai,
       };
     }
 
@@ -31,17 +21,12 @@ exports.getDailyReport = async (req, res) => {
 
     res.json({
       reportDate: new Date().toLocaleDateString(),
-      filter: {
-        nama: nama || null,
-        tanggalMulai: tanggalMulai || null,
-        tanggalSelesai: tanggalSelesai || null,
-      },
+      filter: { nama, tanggalMulai, tanggalSelesai },
       data: records,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Gagal mengambil laporan",
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({ message: "Gagal mengambil laporan", error: error.message });
   }
 };
