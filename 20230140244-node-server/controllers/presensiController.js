@@ -1,6 +1,7 @@
  	// 1. Ganti sumber data dari array ke model Sequelize
  	const { Presensi } = require("../models");
  	const { format } = require("date-fns-tz");
+	const { validationResult } = require("express-validator");
  	const timeZone = "Asia/Jakarta";
  	
  	exports.CheckIn = async (req, res) => {
@@ -116,14 +117,24 @@ exports.deletePresensi = async (req, res) => {
 
 exports.updatePresensi = async (req, res) => {
   try {
+    // Cek hasil validasi dari express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const presensiId = req.params.id;
     const { checkIn, checkOut, nama } = req.body;
+
+    // Pastikan ada data yang dikirim
     if (checkIn === undefined && checkOut === undefined && nama === undefined) {
       return res.status(400).json({
         message:
           "Request body tidak berisi data yang valid untuk diupdate (checkIn, checkOut, atau nama).",
       });
     }
+
+    // Cari record berdasarkan ID
     const recordToUpdate = await Presensi.findByPk(presensiId);
     if (!recordToUpdate) {
       return res
@@ -131,6 +142,7 @@ exports.updatePresensi = async (req, res) => {
         .json({ message: "Catatan presensi tidak ditemukan." });
     }
 
+    // Update nilai yang dikirim
     recordToUpdate.checkIn = checkIn || recordToUpdate.checkIn;
     recordToUpdate.checkOut = checkOut || recordToUpdate.checkOut;
     recordToUpdate.nama = nama || recordToUpdate.nama;
@@ -141,8 +153,9 @@ exports.updatePresensi = async (req, res) => {
       data: recordToUpdate,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Terjadi kesalahan pada server", error: error.message });
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server",
+      error: error.message,
+    });
   }
 };
