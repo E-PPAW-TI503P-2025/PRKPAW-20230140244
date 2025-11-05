@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Presensi.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+
     }
   }
   Presensi.init({
