@@ -18,6 +18,16 @@ export default function DashboardPage() {
     localStorage.removeItem("token");
     navigate("/login");
   };
+  const handleLaporan = () => {
+    if (user?.role !== 'admin') {
+      alert("Akses ditolak. Hanya admin yang dapat mengakses halaman laporan.");
+      return;
+    }
+    navigate("/report");
+  };
+  const handlePresensi = () => {
+    navigate("/attendance");
+  }
 
   return (
     <div
@@ -97,6 +107,26 @@ export default function DashboardPage() {
               style={{ background: COLORS.rose, color: COLORS.bluegray }}
             >
               Logout
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={handleLaporan}
+              className="py-2 px-4 rounded-lg font-semibold"
+              style={{ background: COLORS.rose, color: COLORS.bluegray }}
+            >
+              Laporan
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={handlePresensi}
+              className="py-2 px-4 rounded-lg font-semibold"
+              style={{ background: COLORS.rose, color: COLORS.bluegray }}
+            >
+              Presensi
             </button>
           </div>
         </div>
