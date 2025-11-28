@@ -68,7 +68,7 @@ export default function DashboardPage() {
         className="relative w-full max-w-4xl rounded-3xl p-8 shadow-2xl"
         style={{ backgroundColor: COLORS.white }}
       >
-        {/* header with mini logo */}
+        {/* Header: Logo + Info + Logout Button */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div
@@ -100,6 +100,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Tombol Logout (dibiarkan di header) */}
           <div>
             <button
               onClick={handleLogout}
@@ -109,27 +110,25 @@ export default function DashboardPage() {
               Logout
             </button>
           </div>
+        </div>
 
-          <div>
+        {/* Tombol Aksi: Presensi dan Laporan (Dipindahkan ke baris terpisah) */}
+        <div className="flex justify-start gap-4 mb-8">
+            <button
+              onClick={handlePresensi}
+              className="py-2 px-4 rounded-lg font-semibold"
+              style={{ background: COLORS.skyblue, color: COLORS.bluegray }}
+            >
+              Presensi
+            </button>
             <button
               onClick={handleLaporan}
               className="py-2 px-4 rounded-lg font-semibold"
-              style={{ background: COLORS.rose, color: COLORS.bluegray }}
+              style={{ background: COLORS.skyblue, color: COLORS.bluegray }}
             >
               Laporan
             </button>
           </div>
-
-          <div>
-            <button
-              onClick={handlePresensi}
-              className="py-2 px-4 rounded-lg font-semibold"
-              style={{ background: COLORS.rose, color: COLORS.bluegray }}
-            >
-              Presensi
-            </button>
-          </div>
-        </div>
 
         {/* Main content: stats + decorative cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

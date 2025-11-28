@@ -7,13 +7,48 @@ function AttendancePage() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-    const handleCheckIn = async () => {
-        const response = await axios.post('http://localhost:3001/api/presensi/check-in');
-        return response.data;
-  }
-    const handleCheckOut = async () => {
-        const response = await axios.post("http://localhost:3001/api/presensi/check-out",);
-        return response.data;
+  // Fungsi untuk mendapatkan header otentikasi JWT
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return null;
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    };
+  };
+
+  const handleCheckIn = async () => {
+    setError(""); // Bersihkan error sebelumnya
+    setMessage(""); // Bersihkan pesan sebelumnya
+    const config = getAuthHeaders();
+    if (!config) return;
+
+    try {
+      // Mengirim request dengan header Authorization
+      const response = await axios.post('http://localhost:3001/api/presensi/check-in', {}, config);
+      setMessage(response.data.message); 
+    } catch (err) {
+      setError(err.response?.data?.message || "Check-In gagal");
+    }
+  };
+
+  const handleCheckOut = async () => {
+    setError(""); // Bersihkan error sebelumnya
+    setMessage(""); // Bersihkan pesan sebelumnya
+    const config = getAuthHeaders();
+    if (!config) return;
+    
+    try {
+      // Mengirim request dengan header Authorization
+      const response = await axios.post("http://localhost:3001/api/presensi/check-out", {}, config);
+      setMessage(response.data.message); 
+    } catch (err) {
+      setError(err.response?.data?.message || "Check-Out gagal");
+    }
   };
 
   return (

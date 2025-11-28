@@ -15,14 +15,19 @@ function ReportPage() {
       return;
     }
 
+    // Menggunakan parameter 'query' untuk membuat URL dengan query string 'nama'
+    const url = query
+      ? `http://localhost:3001/api/reports/daily?nama=${encodeURIComponent(query)}`
+      : "http://localhost:3001/api/reports/daily";
+    
     try {
-		//definisikan disini
-        const response = await axios.get("http://localhost:3001/api/reports/daily", {
+        const response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        setReports(response.data);
+        // Perbaikan: API backend mengembalikan data presensi dalam properti 'data'
+        setReports(response.data.data);
         setError(null);
     } catch (err) {
       setReports([]); 
@@ -32,6 +37,11 @@ function ReportPage() {
     }
   };
   
+  // Perbaikan: Memuat data saat komponen pertama kali di-mount
+  useEffect(() => {
+    fetchReports(searchTerm);
+  }, []); // [] memastikan hanya berjalan sekali saat mount
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchReports(searchTerm);
@@ -83,7 +93,8 @@ function ReportPage() {
                 reports.map((presensi) => (
                   <tr key={presensi.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {presensi.user ? presensi.user.nama : "N/A"}
+                      {/* Perbaikan: Menggunakan presensi.nama (karena data sudah denormalisasi di model Presensi) */}
+                      {presensi.nama || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(presensi.checkIn).toLocaleString("id-ID", {
