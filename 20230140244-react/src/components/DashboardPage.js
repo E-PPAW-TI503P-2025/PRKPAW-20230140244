@@ -10,6 +10,7 @@ const COLORS = {
 };
 
 export default function DashboardPage() {
+  // Hanya perlu useNavigate dan token/user
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const user = token ? jwtDecode(token) : null;
@@ -18,16 +19,9 @@ export default function DashboardPage() {
     localStorage.removeItem("token");
     navigate("/login");
   };
-  const handleLaporan = () => {
-    if (user?.role !== 'admin') {
-      alert("Akses ditolak. Hanya admin yang dapat mengakses halaman laporan.");
-      return;
-    }
-    navigate("/report");
-  };
-  const handlePresensi = () => {
-    navigate("/attendance");
-  }
+  
+  // Fungsi-fungsi navigasi ini sekarang seharusnya dipindahkan ke Navbar.js
+  // Dihapus: handleLaporan & handlePresensi
 
   return (
     <div
@@ -68,7 +62,7 @@ export default function DashboardPage() {
         className="relative w-full max-w-4xl rounded-3xl p-8 shadow-2xl"
         style={{ backgroundColor: COLORS.white }}
       >
-        {/* Header: Logo + Info + Logout Button */}
+        {/* Header: Hanya Logo + Info. Tombol Logout Dihapus */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div
@@ -100,8 +94,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Tombol Logout (dibiarkan di header) */}
-          <div>
+          {/* Tombol Logout DIHAPUS dari sini */}
+          {/* Hapus div ini sepenuhnya */}
+          {/* <div>
             <button
               onClick={handleLogout}
               className="py-2 px-4 rounded-lg font-semibold"
@@ -109,11 +104,12 @@ export default function DashboardPage() {
             >
               Logout
             </button>
-          </div>
+          </div> */}
         </div>
 
-        {/* Tombol Aksi: Presensi dan Laporan (Dipindahkan ke baris terpisah) */}
-        <div className="flex justify-start gap-4 mb-8">
+        {/* Tombol Aksi: Presensi dan Laporan DIHAPUS dari sini */}
+        {/* Hapus div ini sepenuhnya */}
+        {/* <div className="flex justify-start gap-4 mb-8">
             <button
               onClick={handlePresensi}
               className="py-2 px-4 rounded-lg font-semibold"
@@ -128,65 +124,12 @@ export default function DashboardPage() {
             >
               Laporan
             </button>
-          </div>
+          </div> */}
 
         {/* Main content: stats + decorative cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1 */}
-          <div
-            className="p-5 rounded-xl shadow-md"
-            style={{ background: `linear-gradient(135deg, ${COLORS.rose}, ${COLORS.white})` }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p style={{ color: COLORS.bluegray }} className="text-sm">Pesanan</p>
-                <h3 style={{ color: COLORS.bluegray }} className="text-2xl font-bold">128</h3>
-              </div>
-              <div style={{ background: COLORS.skyblue, width: 48, height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 3h18v4H3z" fill={COLORS.white}/>
-                  <rect x="3" y="10" width="18" height="11" rx="2" fill={COLORS.white}/>
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div
-            className="p-5 rounded-xl shadow-md"
-            style={{ background: `linear-gradient(135deg, ${COLORS.white}, ${COLORS.skyblue})` }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p style={{ color: COLORS.bluegray }} className="text-sm">Pengguna Aktif</p>
-                <h3 style={{ color: COLORS.bluegray }} className="text-2xl font-bold">54</h3>
-              </div>
-              <div style={{ background: COLORS.rose, width: 48, height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="8" r="3" fill={COLORS.white}/>
-                  <rect x="9" y="13" width="6" height="6" rx="3" fill={COLORS.white}/>
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div
-            className="p-5 rounded-xl shadow-md"
-            style={{ background: `linear-gradient(135deg, ${COLORS.skyblue}, ${COLORS.white})` }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p style={{ color: COLORS.bluegray }} className="text-sm">Feedback</p>
-                <h3 style={{ color: COLORS.bluegray }} className="text-2xl font-bold">14</h3>
-              </div>
-              <div style={{ background: COLORS.bluegray, width: 48, height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2l3 6h6l-4.9 3.6L19 20l-7-4-7 4 1.9-8.4L2 8h6z" fill={COLORS.white}/>
-                </svg>
-              </div>
-            </div>
-          </div>
+        {/* ... (isi card lainnya) */}
         </div>
 
         {/* decorative bottom strip */}
