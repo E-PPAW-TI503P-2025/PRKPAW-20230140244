@@ -7,7 +7,6 @@ import L from 'leaflet'; // Ditambahkan
 
 // Fix for default Leaflet marker icon issue (common issue in bundlers)
 if (L.Icon) {
-  // Ini adalah perbaikan umum untuk memastikan ikon marker tampil.
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
@@ -43,8 +42,8 @@ function AttendancePage() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setCoords({
-            lat: position.coords.latitude, // Mendapatkan latitude [cite: 23]
-            lng: position.coords.longitude // Mendapatkan longitude [cite: 23]
+            lat: position.coords.latitude, // Mendapatkan latitude
+            lng: position.coords.longitude // Mendapatkan longitude
           });
           setError(null);
         },
@@ -64,7 +63,7 @@ function AttendancePage() {
 
   // Dapatkan lokasi saat komponen dimuat
   useEffect(() => {
-    getLocation(); // Dapatkan lokasi saat komponen dimuat [cite: 141, 142]
+    getLocation(); // Dapatkan lokasi saat komponen dimuat
   }, []); 
 
   const handleCheckIn = async () => {
@@ -74,12 +73,12 @@ function AttendancePage() {
     if (!config) return;
 
     if (!coords) {
-      setError("Lokasi belum didapatkan. Mohon izinkan akses lokasi."); // [cite: 146]
+      setError("Lokasi belum didapatkan. Mohon izinkan akses lokasi.");
       return;
     }
 
     try {
-      // Mengirim koordinat di body request [cite: 152, 153]
+      // Mengirim koordinat di body request
       const response = await axios.post('http://localhost:3001/api/presensi/check-in', {
         latitude: coords.lat, 
         longitude: coords.lng
@@ -114,8 +113,14 @@ function AttendancePage() {
         {/* Visualisasi Peta menggunakan React Leaflet */}
         {coords ? (
             <div className="my-4 border rounded-lg overflow-hidden">
-                {/* MapContainer harus memiliki center, zoom, dan style  */}
-                <MapContainer center={[coords.lat, coords.lng]} zoom={15} style={{ height: '300px', width: '100%' }}>
+                {/* FIX: Tambahkan key unik (berdasarkan koordinat) untuk MapContainer 
+                    agar React Strict Mode dapat me-render ulang dengan benar. */}
+                <MapContainer 
+                    key={coords.lat} // <-- FIX: Menggunakan latitude sebagai key unik
+                    center={[coords.lat, coords.lng]} 
+                    zoom={15} 
+                    style={{ height: '300px', width: '100%' }}
+                >
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
