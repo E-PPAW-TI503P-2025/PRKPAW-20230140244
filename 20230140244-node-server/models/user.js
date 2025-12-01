@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Definisikan relasi di sini jika ada
-      User.hasMany(models.Presensi, { foreignKey: 'userId' });
+      User.hasMany(models.Presensi, { foreignKey: 'userId', as: 'presensi' }); // Ditambahkan 'as: presensi'
     }
   }
   User.init({
