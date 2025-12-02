@@ -19,8 +19,9 @@ if (L.Icon) {
 function AttendancePage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [coords, setCoords] = useState(null); // {lat, lng} - ADDED
+  const [coords, setCoords] = useState(null); // {lat, lng} - Logika mapKey dihapus
   const navigate = useNavigate();
+  // Dihapus: const [mapKey, setMapKey] = useState(0);
 
   // Fungsi untuk mendapatkan header otentikasi JWT
   const getAuthHeaders = () => {
@@ -46,6 +47,7 @@ function AttendancePage() {
             lng: position.coords.longitude // Mendapatkan longitude
           });
           setError(null);
+          // Dihapus: setMapKey(prevKey => prevKey + 1);
         },
         (error) => {
           // Penanganan error jika izin ditolak atau gagal
@@ -64,7 +66,7 @@ function AttendancePage() {
   // Dapatkan lokasi saat komponen dimuat
   useEffect(() => {
     getLocation(); // Dapatkan lokasi saat komponen dimuat
-  }, []); 
+  }, []); // [] memastikan hanya berjalan sekali saat mount
 
   const handleCheckIn = async () => {
     setError(""); 
@@ -113,10 +115,8 @@ function AttendancePage() {
         {/* Visualisasi Peta menggunakan React Leaflet */}
         {coords ? (
             <div className="my-4 border rounded-lg overflow-hidden">
-                {/* FIX: Tambahkan key unik (berdasarkan koordinat) untuk MapContainer 
-                    agar React Strict Mode dapat me-render ulang dengan benar. */}
+                {/* Dihapus: key={mapKey} */}
                 <MapContainer 
-                    key={coords.lat} // <-- FIX: Menggunakan latitude sebagai key unik
                     center={[coords.lat, coords.lng]} 
                     zoom={15} 
                     style={{ height: '300px', width: '100%' }}
