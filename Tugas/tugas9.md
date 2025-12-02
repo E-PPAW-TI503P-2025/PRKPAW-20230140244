@@ -8,9 +8,8 @@
 ### Check-out berhasil
 <img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/90c741b8-44fa-43a2-bc5f-e488aa6b500d" />
 
-
 ## Tampilan halaman report yg berisi data presensi dari semua user
-<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/40012985-c463-443e-a6fa-f1b3764d726c" />
+<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/cc1cc9d4-6dbc-4e92-b872-9ca5cd2b9343" />
 
 ## Screenshote tabel presensi di database
-<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/5586fada-a367-4286-aaa2-ff786f83c901" />
+<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/df771be8-54aa-4bbf-8dd0-19c3af6afeea" />
