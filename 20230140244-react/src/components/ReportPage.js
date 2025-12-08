@@ -8,9 +8,8 @@ function ReportPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   
-  // START ADDITION: State untuk modal foto
-  const [selectedPhoto, setSelectedPhoto] = useState(null); // Menyimpan URL foto yang akan ditampilkan di modal
-  // END ADDITION
+  // State untuk menyimpan URL foto yang akan ditampilkan di modal
+  const [selectedImage, setSelectedImage] = useState(null); 
 
   const fetchReports = async (query) => {
     const token = localStorage.getItem("token");
@@ -19,46 +18,57 @@ function ReportPage() {
       return;
     }
 
-    // Menggunakan parameter 'query' untuk membuat URL dengan query string 'nama'
-    const url = query
-      ? `http://localhost:3001/api/reports/daily?nama=${encodeURIComponent(query)}`
-      : "http://localhost:3001/api/reports/daily";
-    
     try {
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        // Perbaikan: API backend mengembalikan data presensi dalam properti 'data'
-        setReports(response.data.data);
-        setError(null);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const baseUrl = "http://localhost:3001/api/reports/daily";
+      // Menggunakan query string 'nama' untuk filter
+      const url = query ? `${baseUrl}?nama=${encodeURIComponent(query)}` : baseUrl;
+
+      const response = await axios.get(url, config);
+      // Data yang diterima sudah diratakan oleh controller
+      setReports(response.data.data);
+      setError(null);
     } catch (err) {
-      setReports([]); 
+      setReports([]);
       setError(
         err.response ? err.response.data.message : "Gagal mengambil data"
       );
     }
   };
-  
-  // Perbaikan: Memuat data saat komponen pertama kali di-mount
-  useEffect(() => {
-    fetchReports(searchTerm);
-  }, []); 
 
+  useEffect(() => {
+    // Memuat data awal saat komponen dimuat
+    fetchReports(searchTerm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
+  
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchReports(searchTerm);
   };
 
-  // ADDITION: Fungsi untuk menutup modal
-  const closeModal = () => setSelectedPhoto(null);
+  // Fungsi untuk mengkonversi path Windows (\) menjadi path URL (/)
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    // Ganti backslash (\) jadi slash (/) jika ada
+    const cleanPath = path.replace(/\\/g, "/");
+    return `http://localhost:3001/${cleanPath}`;
+  };
+
+  // Fungsi untuk menutup modal
+  const closeModal = () => setSelectedImage(null);
 
   return (
     <div className="max-w-6xl mx-auto p-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Laporan Presensi Harian
       </h1>
+
       <form onSubmit={handleSearchSubmit} className="mb-6 flex space-x-2">
         <input
           type="text"
@@ -78,10 +88,10 @@ function ReportPage() {
       {error && (
         <p className="text-red-600 bg-red-100 p-4 rounded-md mb-4">{error}</p>
       )}
+
       {!error && (
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
- 
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -93,11 +103,18 @@ function ReportPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Check-Out
                 </th>
-                {/* ADDITION: Kolom Bukti Foto */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Latitude
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Longitude
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bukti Foto
                 </th>
-                {/* END ADDITION */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -119,27 +136,86 @@ function ReportPage() {
                           })
                         : "Belum Check-Out"}
                     </td>
-                    {/* START ADDITION: Menampilkan thumbnail foto */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {presensi.latitude || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {presensi.longitude || "N/A"}
+                    </td>
+                    {/* START PERUBAHAN BENTUK THUMBNAIL */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {presensi.buktiFoto ? (
-                        // URL dibentuk dari alamat server + path yang disimpan di DB
-                        <img 
-                          src={`http://localhost:3001/${presensi.buktiFoto}`}
-                          alt="Bukti Presensi"
-                          className="h-10 w-10 object-cover cursor-pointer rounded-full hover:ring-2 ring-blue-500"
-                          onClick={() => setSelectedPhoto(`http://localhost:3001/${presensi.buktiFoto}`)}
+                        <img
+                          src={getImageUrl(presensi.buktiFoto)}
+                          alt="Bukti"
+                          // PERUBAHAN: dari rounded-full menjadi rounded-lg
+                          className="h-10 w-10 object-cover cursor-pointer border rounded-lg hover:border-blue-500" 
+                          onClick={() =>
+                            setSelectedImage(getImageUrl(presensi.buktiFoto))
+                          }
                         />
                       ) : (
-                        "N/A"
+                        <span className="text-xs text-gray-400">Tidak ada</span>
                       )}
                     </td>
-                    {/* END ADDITION */}
+                    {/* END PERUBAHAN BENTUK THUMBNAIL */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="mb-2">
+                        <button
+                          onClick={() =>
+                            alert(
+                              `Detail Presensi:\n\nNama: ${
+                                presensi.nama || "N/A"
+                              }\nCheck-In: ${new Date(
+                                presensi.checkIn
+                              ).toLocaleString("id-ID", {
+                                timeZone: "Asia/Jakarta",
+                              })}\nCheck-Out: ${
+                                presensi.checkOut
+                                  ? new Date(presensi.checkOut).toLocaleString(
+                                      "id-ID",
+                                      {
+                                        timeZone: "Asia/Jakarta",
+                                      }
+                                    )
+                                  : "Belum Check-Out"
+                              }\nLatitude: ${
+                                presensi.latitude || "N/A"
+                              }\nLongitude: ${presensi.longitude || "N/A"}`
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-900 font-semibold"
+                        >
+                          Lihat Detail
+                        </button>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() =>
+                            navigate(`/edit-presensi/${presensi.id}`)
+                          }
+                          className="text-green-600 hover:text-green-900 font-semibold"
+                        >
+                          Edit Presensi
+                        </button>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() =>
+                            navigate(`/delete-presensi/${presensi.id}`)
+                          }
+                          className="text-red-600 hover:text-red-900 font-semibold"
+                        >
+                          Hapus Presensi
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="4" // Ubah colspan menjadi 4
+                    colSpan="7" 
                     className="px-6 py-4 text-center text-gray-500"
                   >
                     Tidak ada data yang ditemukan.
@@ -150,34 +226,30 @@ function ReportPage() {
           </table>
         </div>
       )}
-      
-      {/* START ADDITION: Modal untuk menampilkan foto ukuran penuh */}
-      {selectedPhoto && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-          onClick={closeModal} // Tutup modal saat klik di luar
+
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={closeModal} 
         >
-          <div 
-            className="p-4 bg-white rounded-lg max-w-3xl max-h-[90vh] overflow-auto relative"
-            onClick={(e) => e.stopPropagation()} // Cegah event klik dari modal memicu closeModal
-          >
+          <div className="relative max-w-3xl w-full">
             <button
+              className="absolute -top-10 right-0 text-white text-xl font-bold hover:text-gray-300"
               onClick={closeModal}
-              className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 text-xl leading-none flex items-center justify-center"
             >
-              &times;
+              Tutup [X]
             </button>
-            <img 
-              src={selectedPhoto} 
-              alt="Bukti Presensi Penuh" 
-              className="max-w-full max-h-full object-contain"
+            <img
+              src={selectedImage}
+              alt="Bukti Full"
+              className="w-full h-auto rounded-lg shadow-2xl border-2 border-white"
+              onClick={(e) => e.stopPropagation()} 
             />
-            <p className="text-center mt-2 text-sm text-gray-400">Klik di luar foto untuk menutup</p>
           </div>
         </div>
       )}
-      {/* END ADDITION */}
     </div>
   );
 }
+
 export default ReportPage;
