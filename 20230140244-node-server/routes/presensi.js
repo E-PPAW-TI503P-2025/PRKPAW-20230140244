@@ -8,7 +8,12 @@ const { body } = require("express-validator");
 // Perbaikan: Gunakan verifyToken
 router.use(verifyToken);
 
-router.post('/check-in', presensiController.CheckIn);
+// UPDATE: Tambahkan middleware Multer untuk menangani upload file
+router.post(
+  '/check-in', 
+  presensiController.upload.single('image'), 
+  presensiController.CheckIn
+);
 router.post('/check-out', presensiController.CheckOut);
 
 router.delete('/:id', presensiController.deletePresensi);

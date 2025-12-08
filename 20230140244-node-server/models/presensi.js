@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Presensi.belongsTo(models.User, { foreignKey: 'userId', as: 'user' }); // Ditambahkan 'as: user'
+      Presensi.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
     }
   }
   Presensi.init({
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     checkOut: {
       type: DataTypes.DATE,
-      allowNull: true, // Boleh null
+      allowNull: true,
     },
     latitude: {
       type: DataTypes.DECIMAL(10, 7), 
@@ -34,7 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     longitude: {
       type: DataTypes.DECIMAL(10, 7),
       allowNull: true,
-    }
+    },
+    buktiFoto: {
+      type: DataTypes.STRING, // Kita simpan path/nama filenya saja
+      allowNull: true,
+    },
   }, {
     sequelize,
     modelName: 'Presensi',

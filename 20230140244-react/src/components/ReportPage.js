@@ -7,6 +7,10 @@ function ReportPage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // START ADDITION: State untuk modal foto
+  const [selectedPhoto, setSelectedPhoto] = useState(null); // Menyimpan URL foto yang akan ditampilkan di modal
+  // END ADDITION
 
   const fetchReports = async (query) => {
     const token = localStorage.getItem("token");
@@ -40,12 +44,15 @@ function ReportPage() {
   // Perbaikan: Memuat data saat komponen pertama kali di-mount
   useEffect(() => {
     fetchReports(searchTerm);
-  }, []); // [] memastikan hanya berjalan sekali saat mount
+  }, []); 
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchReports(searchTerm);
   };
+
+  // ADDITION: Fungsi untuk menutup modal
+  const closeModal = () => setSelectedPhoto(null);
 
   return (
     <div className="max-w-6xl mx-auto p-8">
@@ -86,6 +93,11 @@ function ReportPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Check-Out
                 </th>
+                {/* ADDITION: Kolom Bukti Foto */}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Bukti Foto
+                </th>
+                {/* END ADDITION */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -93,7 +105,6 @@ function ReportPage() {
                 reports.map((presensi) => (
                   <tr key={presensi.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {/* Perbaikan: Menggunakan presensi.nama (karena data sudah denormalisasi di model Presensi) */}
                       {presensi.nama || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -108,12 +119,27 @@ function ReportPage() {
                           })
                         : "Belum Check-Out"}
                     </td>
+                    {/* START ADDITION: Menampilkan thumbnail foto */}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {presensi.buktiFoto ? (
+                        // URL dibentuk dari alamat server + path yang disimpan di DB
+                        <img 
+                          src={`http://localhost:3001/${presensi.buktiFoto}`}
+                          alt="Bukti Presensi"
+                          className="h-10 w-10 object-cover cursor-pointer rounded-full hover:ring-2 ring-blue-500"
+                          onClick={() => setSelectedPhoto(`http://localhost:3001/${presensi.buktiFoto}`)}
+                        />
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                    {/* END ADDITION */}
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan="3"
+                    colSpan="4" // Ubah colspan menjadi 4
                     className="px-6 py-4 text-center text-gray-500"
                   >
                     Tidak ada data yang ditemukan.
@@ -124,6 +150,33 @@ function ReportPage() {
           </table>
         </div>
       )}
+      
+      {/* START ADDITION: Modal untuk menampilkan foto ukuran penuh */}
+      {selectedPhoto && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+          onClick={closeModal} // Tutup modal saat klik di luar
+        >
+          <div 
+            className="p-4 bg-white rounded-lg max-w-3xl max-h-[90vh] overflow-auto relative"
+            onClick={(e) => e.stopPropagation()} // Cegah event klik dari modal memicu closeModal
+          >
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 text-xl leading-none flex items-center justify-center"
+            >
+              &times;
+            </button>
+            <img 
+              src={selectedPhoto} 
+              alt="Bukti Presensi Penuh" 
+              className="max-w-full max-h-full object-contain"
+            />
+            <p className="text-center mt-2 text-sm text-gray-400">Klik di luar foto untuk menutup</p>
+          </div>
+        </div>
+      )}
+      {/* END ADDITION */}
     </div>
   );
 }
