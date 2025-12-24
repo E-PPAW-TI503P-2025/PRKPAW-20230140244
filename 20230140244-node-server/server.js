@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth");
 // Impor router
 const presensiRoutes = require("./routes/presensi");
 const reportRoutes = require("./routes/reports");
+const iotRoutes = require("./routes/iot");
 
 // Middleware
 app.use(cors());
@@ -31,6 +32,8 @@ app.use("/api/books", ruteBuku);
 app.use("/api/presensi", presensiRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/iot", iotRoutes);
+
 app.listen(PORT, () => {
   console.log(`Express server running at http://localhost:${PORT}/`);
 });
